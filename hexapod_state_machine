@@ -1,0 +1,50 @@
+digraph "State Machine" {
+	graph [color=black compound=true directed=true fillcolor=white label="State Machine" nodesep=1.5 rank=source rankdir=TB "strict"=false style=solid]
+	node [color=black fillcolor=white peripheries=1 shape=rectangle style="rounded, filled"]
+	edge [color=black]
+	Abort [label="Abort\l" color=red fillcolor=darksalmon peripheries=2 shape=rectangle style="rounded, filled"]
+	Idle [label="Idle\l" color=black fillcolor=white peripheries=1 shape=rectangle style="rounded, filled"]
+	subgraph cluster_Nominal {
+		graph [color=black fillcolor=white label="Nominal\l" rank=source style=solid]
+		subgraph cluster_Nominal_root {
+			graph [color=None label="" rank=min]
+			Nominal_anchor [fillcolor=black shape=point width=0.1]
+		}
+		subgraph cluster_Nominal_Manual {
+			graph [color=black fillcolor=white label="Manual\l" rank=source style=solid]
+			subgraph cluster_Nominal_Manual_root {
+				graph [color=None label="" rank=min]
+				Nominal_Manual_anchor [fillcolor=black shape=point width=0.1]
+			}
+			Nominal_Manual_Extend [label="Extend\l" color=black fillcolor=white peripheries=1 shape=rectangle style="rounded, filled"]
+			Nominal_Manual_Retract [label="Retract\l" color=black fillcolor=white peripheries=1 shape=rectangle style="rounded, filled"]
+		}
+		subgraph cluster_Nominal_Autonomous {
+			graph [color=black fillcolor=white label="Autonomous\l" rank=source style=solid]
+			subgraph cluster_Nominal_Autonomous_root {
+				graph [color=None label="" rank=min]
+				Nominal_Autonomous_anchor [fillcolor=black shape=point width=0.1]
+			}
+			Nominal_Autonomous_Extend [label="Extend\l" color=black fillcolor=white peripheries=1 shape=rectangle style="rounded, filled"]
+			Nominal_Autonomous_Retract [label="Retract\l" color=black fillcolor=white peripheries=1 shape=rectangle style="rounded, filled"]
+		}
+	}
+	Abort -> Abort [label=to_abort]
+	Abort -> Idle [label=to_idle]
+	Abort -> Nominal_Manual_Retract [label=to_manual_Retract]
+	Abort -> Nominal_Manual_Extend [label=to_manual_Extend]
+	Idle -> Abort [label=to_abort]
+	Idle -> Nominal_anchor [lhead=cluster_Nominal taillabel=to_nominal]
+	Idle -> Nominal_Manual_Retract [label=to_manual_Retract]
+	Idle -> Nominal_Manual_Extend [label=to_manual_Extend]
+	Nominal_anchor -> Abort [headlabel=to_abort ltail=cluster_Nominal]
+	Nominal_anchor -> Nominal_Manual_Retract [headlabel="to_manual | to_manual_Retract"]
+	Nominal_anchor -> Nominal_Autonomous_Retract [headlabel=to_autonomous]
+	Nominal_anchor -> Nominal_Manual_Extend [headlabel=to_manual_Extend]
+	Nominal_Autonomous_Retract -> Nominal_Manual_Retract [label=to_manual]
+	Nominal_Autonomous_Retract -> Nominal_Autonomous_Extend [label=to_Extend]
+	Nominal_Autonomous_Extend -> Nominal_Manual_Extend [label=to_manual]
+	Nominal_Autonomous_Extend -> Nominal_Autonomous_Retract [label=to_Retract]
+	Nominal_Manual_Retract -> Nominal_Autonomous_Retract [label=to_autonomous]
+	Nominal_Manual_Extend -> Nominal_Autonomous_Extend [label=to_autonomous]
+}
